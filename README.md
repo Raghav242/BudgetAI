@@ -1,104 +1,31 @@
 # BudgetAI — AI-Powered Personal Finance Tracker
 
-A full-stack budgeting app with AI-generated insights, mobile-first design, and financial health scoring.
+BudgetAI is a mobile-first budgeting app that helps you understand where your money goes. You log income and expenses, set monthly budgets per category, and track savings goals. The app turns that data into a **financial health score from 0 to 100** and uses **Google Gemini** to write personalized insights and answer questions about your finances.
+
+---
+
+## What It Does
+
+- **Track transactions:** add, edit, search and filter income and expenses, including recurring ones
+- **Budget by category:** set monthly limits and watch progress bars fill as you spend
+- **Save toward goals:** create savings goals and see how close you are
+- **Get a health score:** a 0–100 score made up of budget adherence (40 pts), savings rate (30 pts) and spending consistency (30 pts)
+- **AI insights:** Gemini reads your monthly summary and suggests where you can improve
+- **Ask AI:** chat with an assistant that uses your own financial data as context
+- **Visualize spending:** a donut chart of spending by category and a bar chart of monthly trends
 
 ---
 
 ## Tech Stack
 
-| Layer | Tech |
-|-------|------|
+| Layer    | Tech                                      |
+| -------- | ----------------------------------------- |
 | Frontend | React 18 + Vite + Tailwind CSS + Recharts |
-| Backend | FastAPI + SQLAlchemy |
-| Database | PostgreSQL (Supabase) |
-| AI | Google Gemini 1.5 Flash |
-| Deploy | Vercel (FE) + Railway (BE) |
-
----
-
-## Quick Start
-
-### 1. Backend
-
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env            # Fill in your values
-uvicorn app.main:app --reload --port 8000
-```
-
-API docs available at `http://localhost:8000/docs`
-
-### 2. Frontend
-
-```bash
-cd frontend
-npm install
-cp .env.example .env.local      # Set VITE_API_URL
-npm run dev
-```
-
-App at `http://localhost:5173`
-
----
-
-## Environment Variables
-
-### Backend `.env`
-
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | Supabase PostgreSQL connection string |
-| `SECRET_KEY` | JWT signing secret (generate with `openssl rand -hex 32`) |
-| `GEMINI_API_KEY` | From [Google AI Studio](https://aistudio.google.com/app/apikey) |
-| `FRONTEND_URL` | Your Vercel URL (for CORS) |
-
-### Frontend `.env.local`
-
-| Variable | Description |
-|----------|-------------|
-| `VITE_API_URL` | Your Railway/Render backend URL |
-
----
-
-## Features
-
-- **Authentication** — Signup/login with JWT, bcrypt passwords
-- **Transactions** — Add/edit/delete with search, filter, recurring support
-- **Dashboard** — Balance card, income/expense stats, recent transactions
-- **Financial Health Score** — 0–100 score based on budgets, savings rate, consistency
-- **Budget Tracking** — Per-category monthly budgets with progress bars
-- **Savings Goals** — Track goals with progress visualization
-- **AI Insights** — Gemini-powered personalized financial analysis
-- **Ask AI** — Chat with your financial data as context
-- **Charts** — Spending by category (donut) + monthly trends (bar)
-
----
-
-## Deployment
-
-### Frontend → Vercel
-
-1. Push to GitHub
-2. Import repo in Vercel
-3. Set `VITE_API_URL` environment variable
-4. Deploy
-
-### Backend → Railway
-
-1. Push to GitHub
-2. Create new Railway project from repo
-3. Set environment variables
-4. Railway auto-detects `Procfile`
-
-### Database → Supabase
-
-1. Create project at [supabase.com](https://supabase.com)
-2. Copy connection string from Settings → Database
-3. Set as `DATABASE_URL` in backend `.env`
-4. Tables are created automatically on first startup
+| Backend  | FastAPI + SQLAlchemy                      |
+| Database | PostgreSQL (Supabase), SQLite for local dev |
+| AI       | Google Gemini                             |
+| Auth     | JWT + bcrypt                              |
+| Deploy   | Vercel (FE) + Railway (BE)                |
 
 ---
 
@@ -132,3 +59,33 @@ GET   /insights/health-score  Financial health score (0-100)
 POST  /ai/analyze           Generate AI insights for current month
 POST  /ai/ask               Ask AI a question with financial context
 ```
+
+---
+
+## Running Locally
+
+You need Python 3.10+, Node 18+, and a [Gemini API key](https://aistudio.google.com/app/apikey).
+
+**Backend** (runs at `http://localhost:8000`, API docs at `/docs`):
+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env            # set SECRET_KEY and GEMINI_API_KEY
+uvicorn app.main:app --reload --port 8000
+```
+
+If you leave `DATABASE_URL` unset, the backend uses a local SQLite file. Tables are created automatically on first startup.
+
+**Frontend** (runs at `http://localhost:5173`):
+
+```bash
+cd frontend
+npm install
+cp .env.example .env.local      # set VITE_API_URL=http://localhost:8000
+npm run dev
+```
+
+**Deploying:** the frontend goes to Vercel (set `VITE_API_URL`) and the backend goes to Railway, which picks up the `Procfile` (set `DATABASE_URL` to your Supabase connection string, plus `SECRET_KEY`, `GEMINI_API_KEY` and `FRONTEND_URL` for CORS).
